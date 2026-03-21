@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Blog</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .post {
+      background: white;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    button {
+      margin-right: 10px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .delete {
+      background: red;
+      color: white;
+    }
+
+    .edit {
+      background: orange;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>My Blog</h1>
+
+<div class="container" id="posts"></div>
+
+<script>
+fetch("/posts")
+.then(res => res.json())
+.then(data => {
+  const container = document.getElementById("posts");
+
+  if (!data.length) {
+    container.innerHTML = "<p>No posts found</p>";
+    return;
+  }
+
+  container.innerHTML = data.map(p => `
+    <div class="post">
+      <h2>${p.title}</h2>
+      <p>${p.content}</p>
+
+      <button class="edit" onclick="editPost('${p._id}')">Edit</button>
+      <button class="delete" onclick="deletePost('${p._id}')">Delete</button>
+    </div>
+  `).join("");
+})
+.catch(err => console.error(err));
+function deletePost(id) {
+  const token = localStorage.getItem("token");
+
+  fetch("/posts/" + id, {
+    method: "DELETE",
+    headers: {
+      "Authorization": "Bearer " + token
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.message === "Invalid token" || data.message === "No token") {
+      alert("Please login first");
+      window.location = "/login.html";
+    } else {
+      location.reload();
+    }
+  });
+}
+function editPost(id) {
+  const title = prompt("New title:");
+  const content = prompt("New content:");
+
+  const token = localStorage.getItem("token");
+
+  fetch("/posts/" + id, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify({ title, content })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.message === "Invalid token" || data.message === "No token") {
+      alert("Please login first");
+      window.location = "/login.html";
+    } else {
+      location.reload();
+    }
+  });
+}
+</script>
+
+</body>
+</html>

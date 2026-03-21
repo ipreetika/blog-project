@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin</title>
+</head>
+<body>
+
+<h1>Create Blog Post</h1>
+
+<input id="title" placeholder="Title"><br><br>
+<textarea id="content" placeholder="Content"></textarea><br><br>
+
+<button onclick="createPost()">Publish</button>
+
+<script>
+function createPost() {
+  const title = document.getElementById("title").value;
+  const content = document.getElementById("content").value;
+
+  const token = localStorage.getItem("token");
+
+  fetch("/posts", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify({ title, content })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.message === "Invalid token" || data.message === "No token") {
+      alert("Please login first");
+      window.location = "/login.html";
+    } else {
+      alert("Post created successfully");
+    }
+  });
+}
+</script>
+
+</body>
+</html>
