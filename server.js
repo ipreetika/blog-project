@@ -25,7 +25,7 @@ app.use(express.static("public"));
 
 // MongoDB connection
 
-const MONGO_URL = "mongodb://127.0.0.1:27017/blog";
+const MONGO_URL = mongodb+srv://ipreetika78:admin123@blog-cluster.zipgxjv.mongodb.net/blog?retryWrites=true&w=majority
 mongoose.connect(MONGO_URL)
 .then(() => {
   console.log("✅ MongoDB CONNECTED SUCCESSFULLY");
@@ -155,7 +155,7 @@ app.delete("/posts/:id", async (req, res) => {
 });
 
 // Update post
-app.put("/posts/:id", async (req, res) => {
+app.put("/posts/:id", auth, async (req, res) => {
   await Post.findByIdAndUpdate(req.params.id, req.body);
   res.json({ message: "Post updated" });
 });
