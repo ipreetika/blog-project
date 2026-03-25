@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
+const User = require("./models/User");
+
 const app = express();
 const SECRET = "mysecretkey";
 function auth(req, res, next) {
