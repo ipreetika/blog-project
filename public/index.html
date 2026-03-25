@@ -1,6 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
+<head>
+  <title>My Blog</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f6fa;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .posts-container {
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .post-card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    button {
+      margin-right: 10px;
+      padding: 6px 12px;
+    }
+  </style>
+
+</head>
+
+<body>
   <title>My Blog</title>
 
   <style>
@@ -51,73 +84,111 @@
 <body>
 
 <h1>My Blog</h1>
+<h2>Create Post</h2>
 
-<div class="container" id="posts"></div>
+<input type="text" id="title" placeholder="Enter title"><br><br>
+
+<textarea id="content" placeholder="Enter content"></textarea><br><br>
+
+<button onclick="createPost()">Submit</button>
+<div id="posts" class="posts-container"></div>
 
 <script>
+  if (!localStorage.getItem("token")) {
+  alert("Please login first");
+  window.location.href = "/login.html";
+}
 fetch("/posts")
-.then(res => res.json())
-.then(data => {
-  const container = document.getElementById("posts");
+  .then(res => res.json())
+  .then(data => {
+    const container = document.getElementById("posts");
 
-  if (!data.length) {
-    container.innerHTML = "<p>No posts found</p>";
-    return;
-  }
+    if (!data.length) {
+      container.innerHTML = "<p>No posts found</p>";
+      return;
+    }
 
-  container.innerHTML = data.map(p => `
-    <div class="post">
-      <h2>${p.title}</h2>
-      <p>${p.content}</p>
+    container.innerHTML = "";
 
-      <button class="edit" onclick="editPost('${p._id}')">Edit</button>
-      <button class="delete" onclick="deletePost('${p._id}')">Delete</button>
-    </div>
-  `).join("");
-})
-.catch(err => console.error(err));
+    data.forEach(post => {
+      const div = document.createElement("div");
+       div.className = "post-card";
+
+div.innerHTML = `
+  <h3>${post.title}</h3>
+  <p>${post.content}</p>
+
+  <button onclick="editPost('${post._id}')">Edit</button>
+  <button onclick="deletePost('${post._id}')">Delete</button>
+
+  <hr>
+`;
+
+      container.appendChild(div);
+    });
+  })
+  .catch(err => console.log(err));
+
 function deletePost(id) {
   const token = localStorage.getItem("token");
 
-  fetch("/posts/" + id, {
+  fetch(`/posts/${id}`, {
     method: "DELETE",
     headers: {
-      "Authorization": "Bearer " + token
+      "Authorization": token
     }
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.message === "Invalid token" || data.message === "No token") {
-      alert("Please login first");
-      window.location = "/login.html";
-    } else {
-      location.reload();
-    }
-  });
+  .then(() => location.reload())
+  .catch(err => console.log(err));
 }
-function editPost(id) {
-  const title = prompt("New title:");
-  const content = prompt("New content:");
 
+function editPost(id) {
   const token = localStorage.getItem("token");
 
-  fetch("/posts/" + id, {
-    method: "PUT",
+  fetch(`/posts`)
+    .then(res => res.json())
+    .then(data => {
+      const post = data.find(p => p._id === id);
+
+      const newTitle = prompt("Edit title:", post.title);
+      const newContent = prompt("Edit content:", post.content);
+
+      if (!newTitle || !newContent) return;
+
+      fetch(`/posts/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token
+        },
+        body: JSON.stringify({
+          title: newTitle,
+          content: newContent
+        })
+      })
+      .then(() => location.reload());
+    });
+}
+
+  function createPost() {
+  const title = document.getElementById("title").value;
+  const content = document.getElementById("content").value;
+
+  console.log("Sending:", title, content); // debug
+
+  fetch("/posts", {
+    method: "POST",
     headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + token
+      "Content-Type": "application/json"
     },
     body: JSON.stringify({ title, content })
   })
   .then(res => res.json())
   .then(data => {
-    if (data.message === "Invalid token" || data.message === "No token") {
-      alert("Please login first");
-      window.location = "/login.html";
-    } else {
-      location.reload();
-    }
-  });
+    alert("Post created!");
+    location.reload();
+  })
+  .catch(err => console.log(err));
 }
 </script>
 
