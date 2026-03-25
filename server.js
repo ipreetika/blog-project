@@ -80,9 +80,13 @@ app.post("/signup", async (req, res) => {
 // LOGIN
 app.post("/login", async (req, res) => {
   try {
+    console.log("BODY:", req.body);  // 👈 ADD THIS
+
     const { username, password } = req.body;
 
     const user = await User.findOne({ username });
+
+    console.log("USER:", user); // 👈 ADD THIS
 
     if (!user) {
       return res.json({ message: "User not found" });
@@ -97,7 +101,7 @@ app.post("/login", async (req, res) => {
     res.json({ token });
 
   } catch (err) {
-    console.log("❌ LOGIN ERROR:", err);
+    console.log("❌ LOGIN ERROR FULL:", err); // 👈 IMPORTANT
     res.json({ message: "Server error" });
   }
 });
