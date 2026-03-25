@@ -27,7 +27,7 @@ app.use(express.static("public"));
 
 // MongoDB connection
 
-const MONGO_URL = "mongodb+srv://ipreetika78:Mongo28atlas@blog-cluster.zipgxjv.mongodb.net/blog?retryWrites=true&w=majority";
+const MONGO_URL = "mongodb+srv://ipreetika78:Mongo78atlas@blog-cluster.zipgxjv.mongodb.net/blog?retryWrites=true&w=majority";
 mongoose.connect(MONGO_URL)
 .then(() => {
   console.log("✅ MongoDB CONNECTED SUCCESSFULLY");
