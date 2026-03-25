@@ -85,22 +85,20 @@ app.post("/login", async (req, res) => {
     const user = await User.findOne({ username });
 
     if (!user) {
-      return res.status(400).json({ message: "User not found" });
+      return res.json({ message: "User not found" });
     }
 
-    // compare password
     if (user.password !== password) {
-      return res.status(400).json({ message: "Invalid password" });
+      return res.json({ message: "Invalid password" });
     }
 
-    // create token (simple)
     const token = "dummy-token";
 
     res.json({ token });
 
   } catch (err) {
     console.log("❌ LOGIN ERROR:", err);
-    res.status(500).json({ error: "Login failed" });
+    res.json({ message: "Server error" });
   }
 });
 
