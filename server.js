@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 
 const User = require("./models/User");
 
-const app = express();
+const app = express(); 
 const SECRET = "mysecretkey";
 function auth(req, res, next) {
   const token = req.headers["authorization"];
@@ -23,19 +23,18 @@ function auth(req, res, next) {
 
 // Middleware
 app.use(express.json());
-app.use(express.static("public"));
+
 
 // MongoDB connection
 
-const MONGO_URL = "mongodb+srv://ipreetika78:Mongo78atlas@blog-cluster.zipgxjv.mongodb.net/blog?retryWrites=true&w=majority";
+const MONGO_URL = "mongodb://mongo:BzMHaoDieiIgCYzswSfPioYJNdisvkfH@crossover.proxy.rlwy.net:29186?authSource=admin&directConnection=true";
+
 mongoose.connect(MONGO_URL)
-.then(() => {
-  console.log("✅ MongoDB CONNECTED SUCCESSFULLY");
-})
-.catch((err) => {
-  console.log("❌ MongoDB CONNECTION ERROR:");
-  console.log(err);
-});
+  .then(() => console.log("✅ MongoDB CONNECTED SUCCESSFULLY"))
+  .catch(err => {
+    console.log("❌ MongoDB CONNECTION ERROR:");
+    console.log(err);
+  });
 // MODELS
 // =====================
 
@@ -58,91 +57,48 @@ app.get("/posts", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-// User Model
-const UserSchema = new mongoose.Schema({
-  username: String,
-  password: String
-});
-const User = mongoose.model("User", UserSchema);
-// SIGNUP
+//signup
 app.post("/signup", async (req, res) => {
-  const { username, password } = req.body;
+    console.log("Signup HIT");   // 👈 ADD THIS
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+    try {
+        const { username, password } = req.body;
 
-  const user = new User({
-    username,
-    password: hashedPassword
-  });
+        const hashed = await bcrypt.hash(password, 10);
 
-  await user.save();
+        const user = new User({ username, password: hashed });
+        await user.save();
 
-  res.json({ message: "User created" });
+        res.json({ message: "Signup successful" });
+
+    } catch (err) {
+        console.log(err);
+        res.json({ message: "Signup error" });
+    }
 });
 // LOGIN
 app.post("/login", async (req, res) => {
-  try {
-    console.log("BODY:", req.body);  // 👈 ADD THIS
+    console.log("BODY:", req.body);   // 👈 ADD THIS
 
-    const { username, password } = req.body;
+    try {
+        const { username, password } = req.body;
 
-    const user = await User.findOne({ username });
+        const user = await User.findOne({ username });
 
-    console.log("USER:", user); // 👈 ADD THIS
+        if (!user) return res.json({ message: "User not found" });
 
-    if (!user) {
-      return res.json({ message: "User not found" });
+        const valid = await bcrypt.compare(password, user.password);
+
+        if (!valid) return res.json({ message: "Invalid password" });
+
+        res.json({ message: "Login successful" });
+      
+
+    } catch (err) {
+        console.log("ERROR:", err);   // 👈 ADD THIS
+        res.json({ message: "Server error" });
     }
-
-    if (user.password !== password) {
-      return res.json({ message: "Invalid password" });
-    }
-
-    const token = "dummy-token";
-
-    res.json({ token });
-
-  } catch (err) {
-    console.log("❌ LOGIN ERROR FULL:", err); // 👈 IMPORTANT
-    res.json({ message: "Server error" });
-  }
 });
-
-// =====================
-// AUTH ROUTES
-// =====================
-
-// Signup
-app.post("/signup", async (req, res) => {
-  const hashed = await bcrypt.hash(req.body.password, 10);
-
-  const user = new User({
-    username: req.body.username,
-    password: hashed
-  });
-
-  await user.save();
-  res.json({ message: "User created" });
-});
-
-// Login
-app.post("/login", async (req, res) => {
-  const user = await User.findOne({ username: req.body.username });
-
-  if (!user) return res.json({ message: "User not found" });
-
-  const valid = await bcrypt.compare(req.body.password, user.password);
-
-  if (!valid) return res.json({ message: "Wrong password" });
-
-  const token = jwt.sign({ id: user._id }, SECRET);
-
-  res.json({ token });
-});
-
-// =====================
-// BLOG ROUTES
-// =====================
 
 // Get posts
 app.get("/posts", async (req, res) => {
@@ -198,6 +154,10 @@ function auth(req, res, next) {
 }
 // =====================
 
-app.listen(3000, () => {
-  console.log("Running on http://localhost:3000");
+app.use(express.static("public"));
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Running on port ${PORT}`);
 });

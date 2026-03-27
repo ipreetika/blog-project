@@ -3,6 +3,14 @@
 <head>
   <title>Admin</title>
 </head>
+<script>
+const token = localStorage.getItem("token");
+
+if (!token) {
+  alert("Please login first");
+  window.location.href = "/login.html";
+}
+</script>
 <body>
 
 <h1>Create Blog Post</h1>

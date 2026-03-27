@@ -10,28 +10,28 @@
 <button onclick="signup()">Signup</button>
 
 <script>
-function signup() {
+async function signup() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
 
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
+    const res = await fetch("/signup", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password })
+    });
 
-  fetch("/signup", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      username: username,
-      password: password
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-    alert(data.message);
-    window.location = "/login.html";
-  });
+    // ✅ SAFER PARSE
+    const data = await res.json();
+
+    if (res.ok && data.message === "Signup successful") {
+        alert("Signup successful");
+        window.location.href = "/login.html";
+    } else {
+        alert(data.message || "Signup failed");
+    }
 }
 </script>
-
 </body>
 </html>
