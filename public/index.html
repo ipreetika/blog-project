@@ -1,145 +1,131 @@
 <!DOCTYPE html>
 <html>
 <head>
-<head>
   <title>My Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f5f6fa;
       margin: 0;
-      padding: 20px;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9fafb;
+      color: #333;
     }
 
-    .posts-container {
-      max-width: 800px;
-      margin: auto;
+    header {
+      background: #111827;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 0 15px;
     }
 
     .post-card {
       background: white;
       padding: 20px;
       margin-bottom: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: 0.2s;
     }
 
-    button {
-      margin-right: 10px;
-      padding: 6px 12px;
+    .post-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .post-card h2 {
+      margin: 0;
+    }
+
+    .post-card p {
+      color: #555;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 14px;
+      background: #2563eb;
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #1e40af;
+    }
+
+    .empty {
+      text-align: center;
+      color: #777;
+      margin-top: 50px;
     }
   </style>
-
 </head>
 
 <body>
 
-<h1>My Blog</h1>
-<h2>Create Post</h2>
+<header>📝 My Blog</header>
 
-<input type="text" id="title" placeholder="Enter title"><br><br>
-
-<textarea id="content" placeholder="Enter content"></textarea><br><br>
-
-<button onclick="createPost()">Submit</button>
-<div id="posts" class="posts-container"></div>
+<div class="container" id="posts"></div>
 
 <script>
-  
 fetch("/posts")
   .then(res => res.json())
   .then(data => {
     const container = document.getElementById("posts");
+    container.innerHTML = "";
 
     if (!data.length) {
-      container.innerHTML = "<p>No posts found</p>";
+      container.innerHTML = "<p class='empty'>No posts available</p>";
       return;
     }
 
-    container.innerHTML = "";
-
     data.forEach(post => {
       const div = document.createElement("div");
-       div.className = "post-card";
+      div.className = "post-card";
 
-div.innerHTML = `
-  <h3>${post.title}</h3>
-  <p>${post.content}</p>
+      div.innerHTML = `
+        <h2>${post.title}</h2>
 
-  <button onclick="editPost('${post._id}')">Edit</button>
-  <button onclick="deletePost('${post._id}')">Delete</button>
+        <p style="font-size:12px;color:gray;">
+          ${post.createdAt ? new Date(post.createdAt).toLocaleDateString() : ""}
+        </p>
 
-  <hr>
-`;
+        ${post.image ? `
+          <img src="${post.image}" 
+               style="width:100%; border-radius:10px; margin:10px 0;">
+        ` : ""}
+
+        <p>${post.content.substring(0, 120)}...</p>
+
+        <span class="btn" onclick="openPost('${post._id}')">Read More</span>
+      `;
 
       container.appendChild(div);
     });
   })
-  .catch(err => console.log(err));
+  .catch(err => {
+    console.error(err);
+    document.getElementById("posts").innerHTML = "<p>Error loading posts</p>";
+  });
 
-function deletePost(id) {
-  const token = localStorage.getItem("token");
-
-  fetch(`/posts/${id}`, {
-    method: "DELETE",
-    headers: {
-      "Authorization": token
-    }
-  })
-  .then(() => location.reload())
-  .catch(err => console.log(err));
-}
-
-function editPost(id) {
-  const token = localStorage.getItem("token");
-
-  fetch(`/posts`)
-    .then(res => res.json())
-    .then(data => {
-      const post = data.find(p => p._id === id);
-
-      const newTitle = prompt("Edit title:", post.title);
-      const newContent = prompt("Edit content:", post.content);
-
-      if (!newTitle || !newContent) return;
-
-      fetch(`/posts/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": token
-        },
-        body: JSON.stringify({
-          title: newTitle,
-          content: newContent
-        })
-      })
-      .then(() => location.reload());
-    });
-}
-
-  function createPost() {
-  const title = document.getElementById("title").value;
-  const content = document.getElementById("content").value;
-
-  console.log("Sending:", title, content); // debug
-
-  fetch("/posts", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ title, content })
-  })
-  .then(res => res.json())
-  .then(data => {
-    alert("Post created!");
-    location.reload();
-  })
-  .catch(err => console.log(err));
+function openPost(id) {
+  window.location.href = "/post.html?id=" + id;
 }
 </script>
+
+<footer style="text-align:center; padding:20px; color:#777;">
+  © 2026 My Blog | Built with ❤️ by preeti
+</footer>
 
 </body>
 </html>

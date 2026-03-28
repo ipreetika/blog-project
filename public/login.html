@@ -2,9 +2,9 @@
 <html>
 <body>
 
-<h2>Login</h2>
+<h2>Admin Login</h2>
 
-<input id="username" placeholder="Username"><br><br>
+<input id="email" placeholder="Email"><br><br>
 <input id="password" type="password" placeholder="Password"><br><br>
 
 <button onclick="login()">Login</button>
@@ -12,36 +12,30 @@
 <script>
 async function login() {
 
-    const username = document.getElementById("username").value;
+    const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    const res = await fetch("/login", {
+    const res = await fetch("/admin/login", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ email, password })
     });
 
-    const text = await res.text();
-    console.log("SERVER RESPONSE:", text);
-    let data;
+    const data = await res.json();
 
-    try {
-        data = JSON.parse(text);
-    } catch (err) {
-        console.error("Server returned HTML:", text);
-        alert("Server error (not JSON)");
-        return;
-    }
+    if (res.ok) {
+        // ✅ SAVE TOKEN
+        localStorage.setItem("token", data.token);
 
-    if (data.message === "Login successful") {
         alert("Login successful");
         window.location.href = "/admin.html";
     } else {
-        alert(data.message);
+        alert(data.message || "Login failed");
     }
 }
 </script>
+
 </body>
 </html>
