@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -34,19 +33,6 @@
       margin-bottom: 20px;
       border-radius: 12px;
       box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-      transition: 0.2s;
-    }
-
-    .post-card:hover {
-      transform: translateY(-3px);
-    }
-
-    .post-card h2 {
-      margin: 0;
-    }
-
-    .post-card p {
-      color: #555;
     }
 
     .btn {
@@ -56,18 +42,11 @@
       background: #2563eb;
       color: white;
       border-radius: 6px;
-      text-decoration: none;
       cursor: pointer;
     }
 
     .btn:hover {
       background: #1e40af;
-    }
-
-    .empty {
-      text-align: center;
-      color: #777;
-      margin-top: 50px;
     }
   </style>
 </head>
@@ -79,16 +58,14 @@
 <div class="container" id="posts"></div>
 
 <script>
-fetch("/posts")
+const API = "https://blog-project-3uyk.onrender.com";
+
+// Load posts
+fetch(API + "/posts")
   .then(res => res.json())
   .then(data => {
     const container = document.getElementById("posts");
     container.innerHTML = "";
-
-    if (!data.length) {
-      container.innerHTML = "<p class='empty'>No posts available</p>";
-      return;
-    }
 
     data.forEach(post => {
       const div = document.createElement("div");
@@ -102,63 +79,58 @@ fetch("/posts")
         </p>
 
         ${post.image ? `
-          <img src="${post.image}" 
-               style="width:100%; border-radius:10px; margin:10px 0;">
+          <img src="${post.image}" style="width:100%; border-radius:10px;">
         ` : ""}
 
         <p>${post.content.substring(0, 120)}...</p>
 
         <span class="btn" onclick="openPost('${post._id}')">Read More</span>
-        
-       <!-- 👍 LIKE BUTTON -->
-  <button onclick="likePost('${post._id}')">
-    👍 ${post.likes || 0}
-  </button>
 
-  <br><br>
+        <br><br>
 
-  <!-- 💬 COMMENT INPUT -->
-  <input id="comment-${post._id}" placeholder="Write comment">
+        <button onclick="likePost('${post._id}')">
+          👍 ${post.likes || 0}
+        </button>
 
-  <button onclick="addComment('${post._id}')">Comment</button>
+        <br><br>
 
-  <!-- 💬 SHOW COMMENTS -->
-  <div>
-    ${(post.comments || []).map(c => `
-      <p>💬 ${c.text}</p>
-    `).join("")}
-  </div> 
+        <input id="comment-${post._id}" placeholder="Write comment">
+        <button onclick="addComment('${post._id}')">Comment</button>
+
+        <div>
+          ${(post.comments || []).map(c => `
+            <p>💬 ${c.text}</p>
+          `).join("")}
+        </div>
       `;
 
       container.appendChild(div);
     });
-  })
-  .catch(err => {
-    console.error(err);
-    document.getElementById("posts").innerHTML = "<p>Error loading posts</p>";
   });
 
+// Open post
 function openPost(id) {
   window.location.href = "/post.html?id=" + id;
 }
-//
+
+// Like
 function likePost(id) {
-  fetch(`/posts/${id}/like`, { method: "POST" })
-    .then(res => res.json())
+  fetch(API + `/posts/${id}/like`, { method: "POST" })
     .then(() => location.reload());
 }
+
+// Comment
 function addComment(id) {
   const input = document.getElementById(`comment-${id}`);
   const text = input.value;
 
-  fetch(`/posts/${id}/comment`, {
+  fetch(API + `/posts/${id}/comment`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({ text })
   })
-  .then(res => res.json())
   .then(() => location.reload());
 }
 </script>
@@ -168,136 +140,4 @@ function addComment(id) {
 </footer>
 
 </body>
-
-<!DOCTYPE html>
-<html>
-<head>
-  <title>My Blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #f9fafb;
-      color: #333;
-    }
-
-    header {
-      background: #111827;
-      color: white;
-      padding: 20px;
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 30px auto;
-      padding: 0 15px;
-    }
-
-    .post-card {
-      background: white;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-      transition: 0.2s;
-    }
-
-    .post-card:hover {
-      transform: translateY(-3px);
-    }
-
-    .post-card h2 {
-      margin: 0;
-    }
-
-    .post-card p {
-      color: #555;
-    }
-
-    .btn {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 8px 14px;
-      background: #2563eb;
-      color: white;
-      border-radius: 6px;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    .btn:hover {
-      background: #1e40af;
-    }
-
-    .empty {
-      text-align: center;
-      color: #777;
-      margin-top: 50px;
-    }
-  </style>
-</head>
-
-<body>
-
-<header>📝 My Blog</header>
-
-<div class="container" id="posts"></div>
-
-<script>
-fetch("/posts")
-  .then(res => res.json())
-  .then(data => {
-    const container = document.getElementById("posts");
-    container.innerHTML = "";
-
-    if (!data.length) {
-      container.innerHTML = "<p class='empty'>No posts available</p>";
-      return;
-    }
-
-    data.forEach(post => {
-      const div = document.createElement("div");
-      div.className = "post-card";
-
-      div.innerHTML = `
-        <h2>${post.title}</h2>
-
-        <p style="font-size:12px;color:gray;">
-          ${post.createdAt ? new Date(post.createdAt).toLocaleDateString() : ""}
-        </p>
-
-        ${post.image ? `
-          <img src="${post.image}" 
-               style="width:100%; border-radius:10px; margin:10px 0;">
-        ` : ""}
-
-        <p>${post.content.substring(0, 120)}...</p>
-
-        <span class="btn" onclick="openPost('${post._id}')">Read More</span>
-      `;
-
-      container.appendChild(div);
-    });
-  })
-  .catch(err => {
-    console.error(err);
-    document.getElementById("posts").innerHTML = "<p>Error loading posts</p>";
-  });
-
-function openPost(id) {
-  window.location.href = "/post.html?id=" + id;
-}
-</script>
-
-<footer style="text-align:center; padding:20px; color:#777;">
-  © 2026 My Blog | Built with ❤️ by preeti
-</footer>
-
-</body>
->>>>>>> 07182f3f1c28a573ec081165522793d8220aca5c
 </html>
