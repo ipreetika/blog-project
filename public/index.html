@@ -108,6 +108,25 @@ fetch("/posts")
         <p>${post.content.substring(0, 120)}...</p>
 
         <span class="btn" onclick="openPost('${post._id}')">Read More</span>
+        
+       <!-- 👍 LIKE BUTTON -->
+  <button onclick="likePost('${post._id}')">
+    👍 ${post.likes || 0}
+  </button>
+
+  <br><br>
+
+  <!-- 💬 COMMENT INPUT -->
+  <input id="comment-${post._id}" placeholder="Write comment">
+
+  <button onclick="addComment('${post._id}')">Comment</button>
+
+  <!-- 💬 SHOW COMMENTS -->
+  <div>
+    ${(post.comments || []).map(c => `
+      <p>💬 ${c.text}</p>
+    `).join("")}
+  </div> 
       `;
 
       container.appendChild(div);
@@ -120,6 +139,26 @@ fetch("/posts")
 
 function openPost(id) {
   window.location.href = "/post.html?id=" + id;
+}
+//
+function likePost(id) {
+  fetch(`/posts/${id}/like`, { method: "POST" })
+    .then(res => res.json())
+    .then(() => location.reload());
+}
+function addComment(id) {
+  const input = document.getElementById(`comment-${id}`);
+  const text = input.value;
+
+  fetch(`/posts/${id}/comment`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ text })
+  })
+  .then(res => res.json())
+  .then(() => location.reload());
 }
 </script>
 
