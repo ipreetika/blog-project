@@ -7,30 +7,25 @@ const cors = require("cors");
 
 const app = express();
 
-// =====================
+
 // MIDDLEWARE
-// =====================
 app.use(express.json());
 app.use(cors()); // IMPORTANT for frontend
 
-// =====================
+
 // CONFIG
-// =====================
 const SECRET = "mysecretkey";
 
 const ADMIN_EMAIL = "vk623935@gmail.com";
 const ADMIN_PASSWORD = "a3c2e47c";
 
-// =====================
+
 // MONGODB
-// =====================
 mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log("✅ MongoDB CONNECTED"))
   .catch(err => console.log(err));
 
-// =====================
 // MODEL
-// =====================
 const PostSchema = new mongoose.Schema({
   title: String,
   content: String,
@@ -58,9 +53,7 @@ const PostSchema = new mongoose.Schema({
 
 const Post = mongoose.model("Post", PostSchema);
 
-// =====================
 // AUTH MIDDLEWARE
-// =====================
 function auth(req, res, next) {
   const header = req.headers["authorization"];
 
@@ -76,9 +69,7 @@ function auth(req, res, next) {
   }
 }
 
-// =====================
 // ROUTES
-// =====================
 
 // 🔐 ADMIN LOGIN
 app.post("/admin/login", (req, res) => {
@@ -92,9 +83,7 @@ app.post("/admin/login", (req, res) => {
   res.status(401).json({ message: "Invalid credentials" });
 });
 
-// =====================
 // PUBLIC ROUTES
-// =====================
 
 // Get all posts
 app.get("/posts", async (req, res) => {
@@ -116,9 +105,7 @@ app.get("/posts/:id", async (req, res) => {
   }
 });
 
-// =====================
 // ADMIN ROUTES
-// =====================
 
 // Create post
 app.post("/posts", async (req, res) => {
@@ -158,9 +145,7 @@ app.delete("/posts/:id", auth, async (req, res) => {
   }
 });
 
-// =====================
 // LIKE ROUTE
-// =====================
 app.post("/posts/:id/like", async (req, res) => {
   try {
     const post = await Post.findByIdAndUpdate(
@@ -175,9 +160,8 @@ app.post("/posts/:id/like", async (req, res) => {
   }
 });
 
-// =====================
+
 // COMMENT ROUTE
-// =====================
 app.post("/posts/:id/comment", async (req, res) => {
   try {
     const { text } = req.body;
@@ -194,14 +178,11 @@ app.post("/posts/:id/comment", async (req, res) => {
   }
 });
 
-// =====================
-// STATIC FILES
-// =====================
+
+// STATIC FILE
 app.use(express.static("public"));
 
-// =====================
 // SERVER
-// =====================
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
