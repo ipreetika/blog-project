@@ -3,24 +3,25 @@
 <head>
   <title>Admin Dashboard</title>
   <style>
-body {
-  font-family: 'Segoe UI';
-  background: #f9fafb;
-}
+    body {
+      font-family: 'Segoe UI';
+      background: #f9fafb;
+    }
 
-input, textarea {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-}
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
 
-button {
-  padding: 10px;
-  background: #2563eb;
-  color: white;
-  border: none;
-}
-</style>
+    button {
+      padding: 10px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
@@ -33,9 +34,9 @@ button {
 
 <h2>Create Blog Post</h2>
 
-<input id="title" placeholder="Title"><br><br>
-<textarea id="content" placeholder="Content"></textarea><br><br>
-<input id="image" placeholder="Image URL"><br><br>
+<input id="title" placeholder="Title">
+<textarea id="content" placeholder="Content"></textarea>
+<input id="image" placeholder="Image URL">
 
 <button onclick="createPost()">Publish</button>
 
@@ -60,35 +61,29 @@ function logout() {
 }
 
 // 📝 Create Post
-
 function createPost() {
   const title = document.getElementById("title").value;
   const content = document.getElementById("content").value;
   const image = document.getElementById("image").value;
 
-  fetch("/posts", {
+  fetch("https://blog-project-3uyk.onrender.com/posts", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer " + localStorage.getItem("token")
+      "Authorization": "Bearer " + token
     },
-    body: JSON.stringify({
-      title: title,
-      content: content,
-      image: image
-    })
+    body: JSON.stringify({ title, content, image })
   })
   .then(res => res.json())
-  .then(data => {
+  .then(() => {
     alert("Post created");
     location.reload();
-  })
-  .catch(err => console.log(err));
+  });
 }
 
 // 📄 Load Posts
 function loadPosts() {
-  fetch("/posts")
+  fetch("https://blog-project-3uyk.onrender.com/posts")
     .then(res => res.json())
     .then(data => {
       const container = document.getElementById("posts");
@@ -111,7 +106,7 @@ function loadPosts() {
 
 // ❌ Delete Post
 function deletePost(id) {
-  fetch("/posts/" + id, {
+  fetch("https://blog-project-3uyk.onrender.com/posts/" + id, {
     method: "DELETE",
     headers: {
       "Authorization": "Bearer " + token
@@ -124,139 +119,7 @@ function deletePost(id) {
   });
 }
 
-// 🚀 Load posts on page load
-loadPosts();
-</script>
-
-</body>
-=======
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Admin Dashboard</title>
-  <style>
-body {
-  font-family: 'Segoe UI';
-  background: #f9fafb;
-}
-
-input, textarea {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-button {
-  padding: 10px;
-  background: #2563eb;
-  color: white;
-  border: none;
-}
-</style>
-</head>
-
-<body>
-
-<h1>Admin Panel</h1>
-
-<button onclick="logout()">Logout</button>
-
-<hr>
-
-<h2>Create Blog Post</h2>
-
-<input id="title" placeholder="Title"><br><br>
-<textarea id="content" placeholder="Content"></textarea><br><br>
-<input id="image" placeholder="Image URL"><br><br>
-
-<button onclick="createPost()">Publish</button>
-
-<hr>
-
-<h2>All Posts</h2>
-<div id="posts"></div>
-
-<script>
-const token = localStorage.getItem("token");
-
-// 🔐 Check login
-if (!token) {
-  alert("Please login first");
-  window.location.href = "/login.html";
-}
-
-// 🚪 Logout
-function logout() {
-  localStorage.removeItem("token");
-  window.location.href = "/login.html";
-}
-
-// 📝 Create Post
-
-function createPost() {
-  const title = document.getElementById("title").value;
-  const content = document.getElementById("content").value;
-  const image = document.getElementById("image").value;
-
-  fetch("/posts", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + localStorage.getItem("token")
-    },
-    body: JSON.stringify({
-      title: title,
-      content: content,
-      image: image
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-    alert("Post created");
-    location.reload();
-  })
-  .catch(err => console.log(err));
-}
-
-// 📄 Load Posts
-function loadPosts() {
-  fetch("/posts")
-    .then(res => res.json())
-    .then(data => {
-      const container = document.getElementById("posts");
-      container.innerHTML = "";
-
-      data.forEach(post => {
-        const div = document.createElement("div");
-
-        div.innerHTML = `
-          <h3>${post.title}</h3>
-          <p>${post.content.substring(0, 100)}...</p>
-          <button onclick="deletePost('${post._id}')">Delete</button>
-          <hr>
-        `;
-
-        container.appendChild(div);
-      });
-    });
-}
-
-// ❌ Delete Post
-function deletePost(id) {
-  fetch("/posts/" + id, {
-    method: "DELETE",
-    headers: {
-      "Authorization": "Bearer " + token
-    }
-  })
-  .then(res => res.json())
-  .then(() => {
-    alert("Post deleted");
-    loadPosts();
-  });
-}
-
-// 🚀 Load posts on page load
+// 🚀 Load posts
 loadPosts();
 </script>
 
