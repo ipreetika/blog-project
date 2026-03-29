@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
 <body>
@@ -38,4 +39,46 @@ async function login() {
 </script>
 
 </body>
+=======
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Admin Login</h2>
+
+<input id="email" placeholder="Email"><br><br>
+<input id="password" type="password" placeholder="Password"><br><br>
+
+<button onclick="login()">Login</button>
+
+<script>
+async function login() {
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    const res = await fetch("/admin/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+        // ✅ SAVE TOKEN
+        localStorage.setItem("token", data.token);
+
+        alert("Login successful");
+        window.location.href = "/admin.html";
+    } else {
+        alert(data.message || "Login failed");
+    }
+}
+</script>
+
+</body>
+>>>>>>> 07182f3f1c28a573ec081165522793d8220aca5c
 </html>
