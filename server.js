@@ -93,7 +93,8 @@ app.get("/posts", async (req, res) => {
   try {
     const posts = await Post.find().sort({ createdAt: -1 });
     res.json(posts);
-  } catch {
+  } catch (err) {
+    console.error("FETCH ERROR:", err);
     res.status(500).json({ message: "Error fetching posts" });
   }
 });
