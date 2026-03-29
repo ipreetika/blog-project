@@ -23,7 +23,10 @@ const ADMIN_PASSWORD = "a3c2e47c";
 // MONGODB
 mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log("✅ MongoDB CONNECTED"))
-  .catch(err => console.log(err));
+  .catch(err => {
+    console.error("❌ MONGO FAILED:", err.message);
+    process.exit(1);
+  });
 
 // MODEL
 const PostSchema = new mongoose.Schema({
