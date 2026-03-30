@@ -236,6 +236,13 @@ button:hover {
 .dark .navbar {
   background: #020617;
 }
+#search {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  margin-right: 10px;
+}
   </style>
 </head>
 
@@ -247,6 +254,7 @@ button:hover {
     <a href="#">Trending</a>
     <a href="#">About</a>
   </div>
+ <input id="search" placeholder="Search blogs...">
  <button id="themeToggle">🌙</button> 
 </header>
 
@@ -258,15 +266,6 @@ button:hover {
 <div class="container">
   <div id="posts" class="grid"></div>
 </div>
-document.getElementById("search").addEventListener("input", function(e) {
-  const value = e.target.value.toLowerCase();
-
-  document.querySelectorAll(".post-card").forEach(card => {
-    card.style.display = card.innerText.toLowerCase().includes(value)
-      ? "block"
-      : "none";
-  });
-});
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -289,10 +288,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+
 </script>
 <script>
 const API = "https://blog-project-3uyk.onrender.com";
+document.addEventListener("DOMContentLoaded", () => {
+  const search = document.getElementById("search");
 
+  if (search) {
+    search.addEventListener("input", function(e) {
+      const value = e.target.value.toLowerCase();
+
+      document.querySelectorAll(".post-card").forEach(card => {
+        card.style.display = card.innerText.toLowerCase().includes(value)
+          ? "block"
+          : "none";
+      });
+    });
+  }
+});
 // Load posts
 fetch(API + "/posts")
 .then(res => res.json())
