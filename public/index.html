@@ -258,11 +258,38 @@ button:hover {
 <div class="container">
   <div id="posts" class="grid"></div>
 </div>
+document.getElementById("search").addEventListener("input", function(e) {
+  const value = e.target.value.toLowerCase();
 
-<header>📝 My Blog</header>
+  document.querySelectorAll(".post-card").forEach(card => {
+    card.style.display = card.innerText.toLowerCase().includes(value)
+      ? "block"
+      : "none";
+  });
+});
 
-<div class="container" id="posts"></div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.getElementById("themeToggle");
 
+  if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark");
+    toggleBtn.innerText = "☀️";
+  }
+
+  toggleBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+
+    if (document.body.classList.contains("dark")) {
+      localStorage.setItem("theme", "dark");
+      toggleBtn.innerText = "☀️";
+    } else {
+      localStorage.setItem("theme", "light");
+      toggleBtn.innerText = "🌙";
+    }
+  });
+});
+</script>
 <script>
 const API = "https://blog-project-3uyk.onrender.com";
 
