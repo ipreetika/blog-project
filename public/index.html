@@ -5,49 +5,76 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #f9fafb;
-      color: #333;
-    }
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f3f4f6;
+}
 
-    header {
-      background: #111827;
-      color: white;
-      padding: 20px;
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-    }
+/* HEADER */
+header {
+  background: #111827;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+}
 
-    .container {
-      max-width: 900px;
-      margin: 30px auto;
-      padding: 0 15px;
-    }
+/* CONTAINER */
+.container {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 0 15px;
+}
 
-    .post-card {
-      background: white;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    }
+/* POST CARD */
+.post-card {
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  transition: 0.3s;
+}
 
-    .btn {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 8px 14px;
-      background: #2563eb;
-      color: white;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+.post-card:hover {
+  transform: translateY(-5px);
+}
 
-    .btn:hover {
-      background: #1e40af;
-    }
+/* IMAGE */
+.post-card img {
+  width: 100%;
+  border-radius: 10px;
+  margin: 10px 0;
+}
+
+/* TITLE */
+.post-card h2 {
+  margin: 0;
+  color: #111827;
+}
+
+/* TEXT */
+.post-card p {
+  color: #374151;
+  line-height: 1.6;
+}
+
+/* BUTTON */
+.btn {
+  display: inline-block;
+  padding: 8px 14px;
+  background: #2563eb;
+  color: white;
+  border-radius: 6px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #1e40af;
+}
   </style>
 </head>
 
@@ -62,47 +89,43 @@ const API = "https://blog-project-3uyk.onrender.com";
 
 // Load posts
 fetch(API + "/posts")
-  .then(res => res.json())
-  .then(data => {
-    const container = document.getElementById("posts");
+.then(res => res.json())
+ .then(data => {
+  const container = document.getElementById("posts");
     container.innerHTML = "";
 
     data.forEach(post => {
       const div = document.createElement("div");
       div.className = "post-card";
 
-      div.innerHTML = `
-        <h2>${post.title}</h2>
+ div.innerHTML = `
+  <h2>${post.title}</h2>
 
-        <p style="font-size:12px;color:gray;">
-          ${post.createdAt ? new Date(post.createdAt).toLocaleDateString() : ""}
-        </p>
+  <p style="font-size:12px;color:gray;">
+    ${post.createdAt ? new Date(post.createdAt).toDateString() : ""}
+  </p>
 
-        ${post.image ? `
-          <img src="${post.image}" style="width:100%; border-radius:10px;">
-        ` : ""}
+  ${post.image ? `<img src="${post.image}" style="width:100%; border-radius:10px;">` : ""}
 
-        <p>${post.content.substring(0, 120)}...</p>
+  <p>${post.content.substring(0, 150)}...</p>
 
-        <span class="btn" onclick="openPost('${post._id}')">Read More</span>
+  <span class="btn" onclick="openPost('${post._id}')">Read More</span>
 
-        <br><br>
+  <br><br>
 
-        <button onclick="likePost('${post._id}')">
-          👍 ${post.likes || 0}
-        </button>
+  <button onclick="likePost('${post._id}')">
+    👍 ${post.likes || 0}
+  </button>
 
-        <br><br>
+  <br><br>
 
-        <input id="comment-${post._id}" placeholder="Write comment">
-        <button onclick="addComment('${post._id}')">Comment</button>
+  <input id="comment-${post._id}" placeholder="Write comment">
+  <button onclick="addComment('${post._id}')">Comment</button>
 
-        <div>
-          ${(post.comments || []).map(c => `
-            <p>💬 ${c.text}</p>
-          `).join("")}
-        </div>
-      `;
+  <div>
+    ${(post.comments || []).map(c => `<p>💬 ${c.text}</p>`).join("")}
+  </div>
+`;     
 
       container.appendChild(div);
     });
