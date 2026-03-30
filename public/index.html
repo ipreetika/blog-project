@@ -103,10 +103,122 @@ input {
   border: 1px solid #d1d5db;
   margin-right: 8px;
 }
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f3f4f6;
+}
+
+/* NAVBAR */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 40px;
+  background: #111827;
+  color: white;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.nav-links a {
+  color: white;
+  margin-left: 20px;
+  text-decoration: none;
+}
+
+/* HERO */
+.hero {
+  text-align: center;
+  padding: 60px 20px;
+  background: linear-gradient(to right, #2563eb, #1e3a8a);
+  color: white;
+}
+
+.hero h1 {
+  margin-bottom: 10px;
+}
+
+/* CONTAINER */
+.container {
+  padding: 30px;
+}
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 25px;
+}
+
+/* POST CARD */
+.post-card {
+  background: white;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: 0.3s;
+}
+
+.post-card:hover {
+  transform: translateY(-5px);
+}
+
+/* IMAGE */
+.post-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+/* CONTENT */
+.post-content {
+  padding: 15px;
+}
+
+.post-content h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.post-content p {
+  color: gray;
+  font-size: 14px;
+}
+
+/* BUTTON */
+.btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 14px;
+  background: #2563eb;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
   </style>
 </head>
 
 <body>
+  <header class="navbar">
+  <div class="logo">📝 MyBlog</div>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="#">Trending</a>
+    <a href="#">About</a>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>Explore the Future of Technology 🚀</h1>
+  <p>Read amazing blogs on AI, Innovation, and Modern Tech</p>
+</section>
+
+<div class="container">
+  <div id="posts" class="grid"></div>
+</div>
 
 <header>📝 My Blog</header>
 
@@ -127,37 +239,22 @@ fetch(API + "/posts")
       div.className = "post-card";
 
  div.innerHTML = `
-  <h2>${post.title}</h2>
+  ${post.image ? `<img src="${post.image}">` : ""}
 
-  <p style="font-size:12px;color:gray;">
-    ${post.createdAt ? new Date(post.createdAt).toDateString() : ""}
-  </p>
+  <div class="post-content">
+    <h2>${post.title}</h2>
 
-  ${post.image ? `<img src="${post.image}" style="width:100%; border-radius:10px;">` : ""}
+    <p style="font-size:12px;color:gray;">
+      ${post.createdAt ? new Date(post.createdAt).toDateString() : ""}
+    </p>
 
-  <p>${post.content.substring(0, 150)}...</p>
+    <p>${post.content.substring(0, 120)}...</p>
 
-  <span class="btn" onclick="openPost('${post._id}')">Read More</span>
-
-  <br><br>
-
-  <button onclick="likePost('${post._id}')">
-    👍 ${post.likes || 0}
-  </button>
-
-  <br><br>
-
-  <input id="comment-${post._id}" placeholder="Write comment">
-  <button onclick="addComment('${post._id}')">Comment</button>
-
-  <div>
-    ${(post.comments || []).map(c => `
-    <div style="background:#f1f5f9;padding:10px;border-radius:10px;margin-top:8px;">
-  <strong>👤 User:</strong> ${c.text}
-</div>
-    `).join("")}
+    <span class="btn" onclick="openPost('${post._id}')">
+      Read More →
+    </span>
   </div>
-`;     
+`;  
 
       container.appendChild(div);
     });
@@ -190,7 +287,7 @@ function addComment(id) {
 }
 </script>
 
-<footer style="text-align:center; padding:20px; color:#777;">
+<footer style="text-align:center;padding:20px;color:gray;">
   © 2026 My Blog | Built with ❤️ by preeti
 </footer>
 
