@@ -31,15 +31,24 @@ header {
 /* POST CARD */
 .post-card {
   background: white;
-  border-radius: 14px;
-  padding: 20px;
-  margin-bottom: 25px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-  transition: 0.3s;
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
 }
 
 .post-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px);
+}
+.post-card h2 {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.post-card p {
+  font-size: 15px;
+  color: #4b5563;
 }
 
 /* IMAGE */
@@ -64,16 +73,35 @@ header {
 /* BUTTON */
 .btn {
   display: inline-block;
-  padding: 8px 14px;
-  background: #2563eb;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #2563eb, #1e40af);
   color: white;
-  border-radius: 6px;
-  margin-top: 10px;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-top: 12px;
   cursor: pointer;
+  border: none;
 }
 
 .btn:hover {
-  background: #1e40af;
+  opacity: 0.9;
+}
+button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  background: #f3f4f6;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #e5e7eb;
+}
+input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  margin-right: 8px;
 }
   </style>
 </head>
@@ -123,7 +151,11 @@ fetch(API + "/posts")
   <button onclick="addComment('${post._id}')">Comment</button>
 
   <div>
-    ${(post.comments || []).map(c => `<p>💬 ${c.text}</p>`).join("")}
+    ${(post.comments || []).map(c => `
+    <div style="background:#f1f5f9;padding:10px;border-radius:10px;margin-top:8px;">
+  <strong>👤 User:</strong> ${c.text}
+</div>
+    `).join("")}
   </div>
 `;     
 
